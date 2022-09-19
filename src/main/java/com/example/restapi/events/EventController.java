@@ -1,5 +1,6 @@
 package com.example.restapi.events;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,12 +14,16 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Controller
 @RequestMapping(value = "/api/events", produces = MediaTypes.HAL_JSON_VALUE)
+@RequiredArgsConstructor
 public class EventController {
+
+    private final EventRepository eventRepository;
 
     @PostMapping
     public ResponseEntity createEvent(@RequestBody Event event) {
+        Event newEvent = eventRepository.save(event);
         // created()는 uri가 필요하다.
-        URI createdUri = linkTo(EventController.class).slash("{id}").toUri();
+        URI createdUri = linkTo(EventController.class).slash(event.getId()).toUri();
         event.setId(1);
 
         // Header의 Location 정보는 ResponseEntity.created(uri정보)에 의해 만들어진다.
