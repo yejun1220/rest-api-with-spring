@@ -1,4 +1,4 @@
-package events;
+package com.example.restapi.events;
 
 import org.junit.jupiter.api.Test;
 
