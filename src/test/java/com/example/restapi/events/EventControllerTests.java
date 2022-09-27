@@ -61,7 +61,7 @@ public class EventControllerTests {
     }
 
     @Test
-    @DisplayName("입력 받을 수 없는 값을 사용한 경우 에러가 발생하는 테스트 ")
+    @DisplayName("입력 받을 수 없는 값을 사용한 경우 에러가 발생하는 테스트")
     void createEvent_Bad_Request() throws Exception {
         Event event = Event.builder()
                 .id(100)
@@ -97,15 +97,15 @@ public class EventControllerTests {
     }
 
     @Test
-    @DisplayName("잘못된 값을 사용한 경우 에러가 발생하는 테스트 ")
+    @DisplayName("잘못된 값을 사용한 경우 에러가 발생하는 테스트")
     public void createEvent_Bad_Request_Wrong_Input() throws Exception {
         EventDto eventDto = EventDto.builder()
                 .name("Spring")
                 .description("description")
-                .beginEnrollmentDateTime(LocalDateTime.of(2022, 1, 1, 12, 0))
-                .closeEnrollmentDateTime(LocalDateTime.of(2022, 1, 2, 12, 0))
-                .beginEventDateTime(LocalDateTime.of(2022, 1, 2, 12, 0))
-                .endEventDateTime(LocalDateTime.of(2022, 1, 2, 12, 0))
+                .beginEnrollmentDateTime(LocalDateTime.of(2022, 2, 1, 12, 0))
+                .closeEnrollmentDateTime(LocalDateTime.of(2022, 2, 2, 12, 0))
+                .beginEventDateTime(LocalDateTime.of(2022, 2, 2, 12, 0))
+                .endEventDateTime(LocalDateTime.of(2022, 1, 1, 12, 0))
                 .basePrice(100)
                 .maxPrice(50)
                 .limitOfEnrollment(10)
@@ -116,6 +116,12 @@ public class EventControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(this.objectMapper.writeValueAsString(eventDto))
                 )
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$[0].field").exists())
+                .andExpect(jsonPath("$[0].objectName").exists())
+                .andExpect(jsonPath("$[0].code").exists())
+                .andExpect(jsonPath("$[0].defaultMessage").exists())
+                .andExpect(jsonPath("$[0].rejectedValue").exists())
+        ;
     }
 }
