@@ -36,10 +36,10 @@ public class EventController {
         }
 
         Event event = modelMapper.map(eventDto, Event.class);
+        event.update();
         Event newEvent = eventRepository.save(event);
         // created()는 uri가 필요하다.
         URI createdUri = linkTo(EventController.class).slash(event.getId()).toUri();
-        event.setId(1);
 
         // Header의 Location 정보는 ResponseEntity.created(uri정보)에 의해 만들어진다.
         // 객체를 body에 담을 수도 있고 헤더 정보 등을 셋팅 할수 있기 때문에 ResponseEntity 사용

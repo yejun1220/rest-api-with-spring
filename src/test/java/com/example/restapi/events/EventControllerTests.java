@@ -29,9 +29,6 @@ public class EventControllerTests {
     @Autowired
     ObjectMapper objectMapper;
 
-    @MockBean
-    EventRepository eventRepository;
-
     @Test
     @DisplayName("정상적으로 이벤트를 생성하는 테스트")
     void createEvent() throws Exception {
@@ -40,6 +37,11 @@ public class EventControllerTests {
                 .description("description")
                 .beginEnrollmentDateTime(LocalDateTime.of(2022, 1, 1, 12, 0))
                 .closeEnrollmentDateTime(LocalDateTime.of(2022, 1, 2, 12, 0))
+                .beginEventDateTime(LocalDateTime.of(2022, 1, 1, 12, 0))
+                .endEventDateTime(LocalDateTime.of(2022, 1, 2, 12, 0))
+                .basePrice(100)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
                 .location("location")
                 .build();
 
@@ -54,8 +56,8 @@ public class EventControllerTests {
                 .andExpect(jsonPath("id").exists())
                 .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE))
-                .andExpect(jsonPath("id").value(Matchers.not(100)))
-                .andExpect(jsonPath("free").value(Matchers.not(true)))
+                .andExpect(jsonPath("free").value(false))
+                .andExpect(jsonPath("offline").value(true))
                 .andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()))
         ;
     }
