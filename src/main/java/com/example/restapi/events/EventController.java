@@ -2,7 +2,9 @@ package com.example.restapi.events;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
@@ -39,10 +41,17 @@ public class EventController {
         event.update();
         Event newEvent = eventRepository.save(event);
         // created()는 uri가 필요하다.
-        URI createdUri = linkTo(EventController.class).slash(event.getId()).toUri();
+        WebMvcLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
+        URI createdUri = selfLinkBuilder.toUri();
+
+        // Entity(=API)를 만들 때 사용한다.
+        EntityModel<Event> eventResource = EntityModel.of(newEvent);
+        eventResource.add(selfLinkBuilder.withSelfRel());
+        eventResource.add(selfLinkBuilder.withRel("update-event"));
+        eventResource.add(linkTo(EventController.class).withRel("query-events"));
 
         // Header의 Location 정보는 ResponseEntity.created(uri정보)에 의해 만들어진다.
         // 객체를 body에 담을 수도 있고 헤더 정보 등을 셋팅 할수 있기 때문에 ResponseEntity 사용
-        return ResponseEntity.created(createdUri).body(event);
+        return ResponseEntity.created(createdUri).body(eventResource);
     }
 }
